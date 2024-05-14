@@ -15,7 +15,6 @@ from handlers import router
 from middlewares import DatabaseSession
 from user_group import group_router
 
-# bot = Bot(token="6324678950:AAH7M6t8bo_9VrqTKzPWtRU8Lr81ezhbmd4")
 bot = Bot(token=os.getenv('TOKEN'))
 dispatcher = Dispatcher()
 
