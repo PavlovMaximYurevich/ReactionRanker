@@ -13,10 +13,7 @@ async def start_cmd(message: Message):
     )
 
 
-@router.message_reaction_count()
-async def count_reactions(message: MessageReactionCountUpdated):
-    message = await message.get_message()
-    print(message)
+
 
 
 # @router.message()

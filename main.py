@@ -37,6 +37,7 @@ async def main():
     dispatcher.startup.register(on_start_up)
     dispatcher.shutdown.register(on_shutdown)
     dispatcher.update.middleware(DatabaseSession(session_pool=session_maker))
+    await bot.delete_webhook(drop_pending_updates=True)
     await dispatcher.start_polling(bot)
 
 

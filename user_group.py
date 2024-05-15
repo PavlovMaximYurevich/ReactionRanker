@@ -17,8 +17,8 @@ from orm_query import orm_add_message, orm_create_or_update_reactions
 group_router = Router()
 
 
-# async def list_reactions(message_reaction: MessageReactionUpdated):
-#     return message_reaction.new_reaction
+async def current_list(list_reactions: list) -> int:
+    return len(list_reactions)
 
 
 @group_router.message()
@@ -32,17 +32,19 @@ async def message_handler(message: Message, session: AsyncSession):
 async def message_reaction_handler(message_reaction: MessageReactionUpdated,
                                    session: AsyncSession,
                                    ):
+
     # for emoji in message_reaction.new_reaction:
     #     if emoji.emoji not in ['💩', '👎', '🤬', '😡']:
     await orm_create_or_update_reactions(session,
                                          message_reaction,
                                          message_id=message_reaction.message_id)
-
+    previous_cnt = len(message_reaction.new_reaction)
 
 # @group_router.message_reaction_count()
-# async def msg_reactions_count(msg: MessageReactionCountUpdated, react: MessageReactionUpdated):
-#     print(react.new_reaction)
-    # print(msg.message_id)
+# async def msg_reactions_count(msg: MessageReactionCountUpdated):
+#     print("AAAAAAAAAAAAAAAAAAAAAAAAA")
+#     print(msg.reactions)
+#     print(msg.message_id)
 
 #
 # @group_router.message_reaction_count()
