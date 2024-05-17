@@ -1,7 +1,8 @@
-from datetime import timedelta
+from datetime import timedelta, date
 
 from aiogram.types import Message, MessageReactionUpdated
-from sqlalchemy import update, select, func
+from sqlalchemy import update, select, func, Date, desc
+from sqlalchemy.sql.expression import cast, cte
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import ChatMessages, Reactions
@@ -66,11 +67,42 @@ async def orm_create_or_update_reactions(session: AsyncSession,
 
 
 async def orm_get_all_statistics(session: AsyncSession):
+    """Статистика за всё время."""
+
     queryset = select(ChatMessages.username, func.sum(Reactions.count_reactions).label("count")
                       ).join(
-                          Reactions, ChatMessages.id_message == Reactions.id_message
-                      ).group_by(
-                          ChatMessages.username
-                      ).order_by('count')
+        Reactions, ChatMessages.id_message == Reactions.id_message
+    ).group_by(
+        ChatMessages.username
+    ).order_by(desc('count'))
     res = await session.execute(queryset)
+    # print(res.all())
+    return res.all()
+
+
+async def orm_get_statistics_day(session: AsyncSession):
+    """Статистика по дням."""
+
+    select_date = select(
+        ChatMessages.username, Reactions.count_reactions
+    ).join(
+        Reactions, ChatMessages.id_message == Reactions.id_message
+    ).where(
+        func.date(ChatMessages.created_date) == date.today()
+    ).subquery('select_date')
+
+    cte_sql = select(select_date.c.username, func.sum(select_date.c.count_reactions).label("count")
+                     ).group_by(
+                        select_date.c.username
+                     ).order_by('count')
+    print('SELECT', cte_sql)
+    # print('DATE_TODAY', date.today())
+    # queryset = select(select_date.username, func.sum(select_date.count_reactions).label("count")
+    #                   ).group_by(
+    #                       select_date.username
+    #                   ).order_by('count')
+
+    res = await session.execute(cte_sql)
+
+    # print('RES_ALL', res.all())
     return res.all()

@@ -38,3 +38,12 @@ def get_keyboard(
 
     return keyboard.adjust(*sizes).as_markup(
         resize_keyboard=True, input_field_placeholder=placeholder)
+
+
+ADMIN_KEYBOARD = get_keyboard(
+    "Статистика",
+    "За день",
+    "За неделю",
+    placeholder="Выберите действие",
+    sizes=(2,),
+)

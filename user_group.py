@@ -17,10 +17,6 @@ from orm_query import orm_add_message, orm_create_or_update_reactions
 group_router = Router()
 
 
-async def current_list(list_reactions: list) -> int:
-    return len(list_reactions)
-
-
 @group_router.message()
 async def message_handler(message: Message, session: AsyncSession):
     # Получить chat_id

@@ -1,7 +1,7 @@
 # from datetime import datetime
 import datetime
 
-from sqlalchemy import Text, DateTime, Integer, String, func, ForeignKey, ARRAY
+from sqlalchemy import Text, DateTime, Integer, String, func, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped
 from sqlalchemy.orm import mapped_column
 
