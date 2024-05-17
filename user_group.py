@@ -23,7 +23,7 @@ async def current_list(list_reactions: list) -> int:
 
 @group_router.message()
 async def message_handler(message: Message, session: AsyncSession):
-
+    # Получить chat_id
     await orm_add_message(session, message)
     print(message.text)
 
@@ -32,23 +32,6 @@ async def message_handler(message: Message, session: AsyncSession):
 async def message_reaction_handler(message_reaction: MessageReactionUpdated,
                                    session: AsyncSession,
                                    ):
-
-    # for emoji in message_reaction.new_reaction:
-    #     if emoji.emoji not in ['💩', '👎', '🤬', '😡']:
     await orm_create_or_update_reactions(session,
                                          message_reaction,
                                          message_id=message_reaction.message_id)
-    previous_cnt = len(message_reaction.new_reaction)
-
-# @group_router.message_reaction_count()
-# async def msg_reactions_count(msg: MessageReactionCountUpdated):
-#     print("AAAAAAAAAAAAAAAAAAAAAAAAA")
-#     print(msg.reactions)
-#     print(msg.message_id)
-
-#
-# @group_router.message_reaction_count()
-# async def message_reaction_handler(message_reaction: ReactionCount,
-#                                    session: AsyncSession,
-#                                    ):
-#     print('CDYTIIIIIIIIIIIIIII', message_reaction.total_count)
