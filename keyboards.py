@@ -41,9 +41,10 @@ def get_keyboard(
 
 
 ADMIN_KEYBOARD = get_keyboard(
-    "Статистика",
+    "Статистика за всё время",
     "За день",
     "За неделю",
+    "Выбрать период",
     placeholder="Выберите действие",
     sizes=(2,),
 )
