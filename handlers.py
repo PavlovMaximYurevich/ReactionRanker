@@ -1,14 +1,10 @@
 import re
-from typing import List, Any
+from typing import List
 
 from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, StateFilter
-from aiogram.utils.formatting import (
-    as_list,
-    as_marked_section,
-    Bold,
-)
+
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
@@ -57,7 +53,6 @@ async def output_text(array: List, message: Message):
         for id_user, name, surname, count_reactions in array:
             if ind == 1:
                 link = f'🥇 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
-                # link = f'🥇 {await truncate_last_name(name, surname)}'
                 msg += f'{link} - {count_reactions}\n'
             elif ind == 2:
                 link = f'🥈 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
