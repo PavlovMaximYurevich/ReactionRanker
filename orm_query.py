@@ -52,7 +52,6 @@ async def orm_create_or_update_reactions(session: AsyncSession,
 
         query = update(Reactions).where(Reactions.id_message == message_id).values(
             id_message=message_reaction.message_id,
-            reactions=str(message_reaction.new_reaction),
             count_reactions=list_reactions[0][0] + flag
         )
         await session.execute(query)
@@ -72,6 +71,7 @@ async def orm_get_all_statistics(session: AsyncSession):
     """Статистика за всё время."""
 
     queryset = select(
+        ChatMessages.id_username,
         ChatMessages.name,
         ChatMessages.last_name,
         func.sum(Reactions.count_reactions).label("count")
@@ -92,7 +92,8 @@ async def orm_get_statistics_day(session: AsyncSession):
     """Статистика по дням."""
 
     queryset = select(
-        ChatMessages.username,
+        ChatMessages.id_username,
+        ChatMessages.name,
         ChatMessages.last_name,
         func.sum(Reactions.count_reactions).label("count")
     ).join(
@@ -101,7 +102,7 @@ async def orm_get_statistics_day(session: AsyncSession):
     ).where(
         func.date(ChatMessages.created_date) == date.today()
     ).group_by(
-        ChatMessages.username,ChatMessages.last_name
+        ChatMessages.username, ChatMessages.last_name
     ).order_by(desc('count'))
 
     res = await session.execute(queryset)
@@ -114,7 +115,8 @@ async def orm_get_statistics_week(session: AsyncSession):
     """Статистика по неделям."""
 
     queryset = select(
-        ChatMessages.username,
+        ChatMessages.id_username,
+        ChatMessages.name,
         ChatMessages.last_name,
         func.sum(Reactions.count_reactions).label("count")
     ).join(
@@ -138,7 +140,8 @@ async def orm_get_statistics_custom(session: AsyncSession,
     """Статистика по выбранному периоду."""
 
     queryset = select(
-        ChatMessages.username,
+        ChatMessages.id_username,
+        ChatMessages.name,
         ChatMessages.last_name,
         func.sum(Reactions.count_reactions).label("count")
     ).join(

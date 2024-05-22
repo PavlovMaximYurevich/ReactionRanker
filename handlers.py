@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import List, Any
 
 from aiogram import Router, F
 from aiogram.enums import ParseMode
@@ -38,26 +38,41 @@ async def check_date(message: Message):
     return True
 
 
+async def truncate_last_name(first_name: str,
+                             last_name: str,
+                             ) -> str:
+    if last_name is None:
+        return f'{first_name}'
+    else:
+        return f'{first_name} {last_name}'
+
+
 async def output_text(array: List, message: Message):
     if array:
-        for user_data in array:
-            user_data = list(user_data)
-            for item in user_data:
-                print(user_data)
-                print(item)
-                if item is None:
-                    del item
-        print(array)
-        content = as_list(
-            as_marked_section(
-                Bold('Победители'),
-                f'1 место по реакциям {array[0][0]} {array[0][1]}. Число реакции {array[0][2]}',
-                # f'2 место по реакциям {array[1][0]}. Число реакции {array[1][1]}',
-                marker="🏆 "
-            )
-        )
+        ind = 1
+        msg = ''
+        max_user = 10
+        if len(array) > max_user:
+            array = array[:max_user]
+        for id_user, name, surname, count_reactions in array:
+            if ind == 1:
+                link = f'🥇 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                # link = f'🥇 {await truncate_last_name(name, surname)}'
+                msg += f'{link} - {count_reactions}\n'
+            elif ind == 2:
+                link = f'🥈 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                msg += f'{link} - {count_reactions}\n'
+            elif ind == 3:
+                link = f'🥉 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                msg += f'{link} - {count_reactions}\n'
+            else:
+                link = f'{ind}.  <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                msg += f'{link} - {count_reactions}\n'
+            ind += 1
+
         await message.answer(
-            **content.as_kwargs()
+            f'Топ юзеров: \n{msg}',
+            parse_mode=ParseMode.HTML
         )
 
     else:
@@ -125,7 +140,6 @@ async def finish(message: Message,
                  state: FSMContext,
                  session: AsyncSession
                  ):
-
     if not await check_date(message):
         return
     await state.update_data(end_period=message.text)
