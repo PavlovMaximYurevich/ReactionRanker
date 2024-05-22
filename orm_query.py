@@ -9,11 +9,14 @@ from database.models import ChatMessages, Reactions
 
 
 async def orm_add_message(session: AsyncSession, message: Message):
+
     session.add(ChatMessages(
         id_message=message.message_id,
-        text=message.text,
+        content_type=message.content_type,
         created_date=message.date + timedelta(hours=3),
-        username=f'@{message.from_user.username}',
+        username=message.from_user.username,
+        name=message.from_user.first_name,
+        last_name=message.from_user.last_name,
         id_username=message.from_user.id
     ))
     await session.commit()
@@ -60,7 +63,6 @@ async def orm_create_or_update_reactions(session: AsyncSession,
 
         session.add(Reactions(
             id_message=message_reaction.message_id,
-            reactions=str(message_reaction.new_reaction),
             count_reactions=len(message_reaction.new_reaction)
         ))
         await session.commit()
@@ -70,11 +72,14 @@ async def orm_get_all_statistics(session: AsyncSession):
     """Статистика за всё время."""
 
     queryset = select(
-        ChatMessages.username, func.sum(Reactions.count_reactions).label("count")
+        ChatMessages.name,
+        ChatMessages.last_name,
+        func.sum(Reactions.count_reactions).label("count")
     ).join(
-        Reactions, ChatMessages.id_message == Reactions.id_message
+        Reactions,
+        ChatMessages.id_message == Reactions.id_message
     ).group_by(
-        ChatMessages.username
+        ChatMessages.username, ChatMessages.last_name
     ).order_by(desc('count'))
 
     res = await session.execute(queryset)
@@ -87,13 +92,16 @@ async def orm_get_statistics_day(session: AsyncSession):
     """Статистика по дням."""
 
     queryset = select(
-        ChatMessages.username, func.sum(Reactions.count_reactions).label("count")
+        ChatMessages.username,
+        ChatMessages.last_name,
+        func.sum(Reactions.count_reactions).label("count")
     ).join(
-        Reactions, ChatMessages.id_message == Reactions.id_message
+        Reactions,
+        ChatMessages.id_message == Reactions.id_message
     ).where(
         func.date(ChatMessages.created_date) == date.today()
     ).group_by(
-        ChatMessages.username
+        ChatMessages.username,ChatMessages.last_name
     ).order_by(desc('count'))
 
     res = await session.execute(queryset)
@@ -106,13 +114,16 @@ async def orm_get_statistics_week(session: AsyncSession):
     """Статистика по неделям."""
 
     queryset = select(
-        ChatMessages.username, func.sum(Reactions.count_reactions).label("count")
+        ChatMessages.username,
+        ChatMessages.last_name,
+        func.sum(Reactions.count_reactions).label("count")
     ).join(
-        Reactions, ChatMessages.id_message == Reactions.id_message
+        Reactions,
+        ChatMessages.id_message == Reactions.id_message
     ).where(
         func.date(ChatMessages.created_date) >= date.today() - timedelta(days=6)
     ).group_by(
-        ChatMessages.username
+        ChatMessages.username, ChatMessages.last_name
     ).order_by(desc('count'))
 
     res = await session.execute(queryset)
@@ -127,13 +138,15 @@ async def orm_get_statistics_custom(session: AsyncSession,
     """Статистика по выбранному периоду."""
 
     queryset = select(
-        ChatMessages.username, func.sum(Reactions.count_reactions).label("count")
+        ChatMessages.username,
+        ChatMessages.last_name,
+        func.sum(Reactions.count_reactions).label("count")
     ).join(
         Reactions, ChatMessages.id_message == Reactions.id_message
     ).where(
         func.date(ChatMessages.created_date).between(start_period, end_period)
     ).group_by(
-        ChatMessages.username
+        ChatMessages.username, ChatMessages.last_name
     ).order_by(desc('count'))
 
     res = await session.execute(queryset)

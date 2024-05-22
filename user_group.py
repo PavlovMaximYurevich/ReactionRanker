@@ -20,8 +20,9 @@ group_router = Router()
 @group_router.message()
 async def message_handler(message: Message, session: AsyncSession):
     # Получить chat_id
+    print(message.content_type)
     await orm_add_message(session, message)
-    print(message.text)
+    # print(message)
 
 
 @group_router.message_reaction()

@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 from aiogram import Router, F
 from aiogram.enums import ParseMode
@@ -37,6 +38,32 @@ async def check_date(message: Message):
     return True
 
 
+async def output_text(array: List, message: Message):
+    if array:
+        for user_data in array:
+            user_data = list(user_data)
+            for item in user_data:
+                print(user_data)
+                print(item)
+                if item is None:
+                    del item
+        print(array)
+        content = as_list(
+            as_marked_section(
+                Bold('Победители'),
+                f'1 место по реакциям {array[0][0]} {array[0][1]}. Число реакции {array[0][2]}',
+                # f'2 место по реакциям {array[1][0]}. Число реакции {array[1][1]}',
+                marker="🏆 "
+            )
+        )
+        await message.answer(
+            **content.as_kwargs()
+        )
+
+    else:
+        await message.answer("За выбранный период нет данных")
+
+
 @router.message(CommandStart())
 async def start_cmd(message: Message):
     await message.answer(
@@ -48,74 +75,22 @@ async def start_cmd(message: Message):
 @router.message(F.text == 'Статистика за всё время')
 async def get_all_statistics(message: Message, session: AsyncSession):
     total = await orm_get_all_statistics(session)
+    # print(total)
     print('ЭТО ВСЕ РЕАКЦИИ')
-    if total:
-        content = as_list(
-            as_marked_section(
-                Bold('Победители'),
-                f'1 место по реакциям {total[0][0]}. Число реакции {total[0][1]}',
-                f'2 место по реакциям {total[1][0]}. Число реакции {total[1][1]}',
-                marker="🏆 "
-            )
-        )
-        await message.answer(
-            **content.as_kwargs()
-            # f'1 место по реакциям {total[0][0]}. Число реакции {total[0][1]}\n'
-            # f'2 место по реакциям {total[1][0]}. Число реакции {total[1][1]}'
-        )
-        # 🏆
-        # content = as_list(
-        #     as_marked_section(
-        #         Bold("Success:"),
-        #         "Test 1",
-        #         "Test 3",
-        #         "Test 4",
-        #         marker="✅ ",
-        #     ),
-        #     as_marked_section(
-        #         Bold("Failed:"),
-        #         "Test 2",
-        #         marker="❌ ",
-        #     ),
-        #     as_marked_section(
-        #         Bold("Summary:"),
-        #         as_key_value("Total", 4),
-        #         as_key_value("Success", 3),
-        #         as_key_value("Failed", 1),
-        #         marker="  ",
-        #     ),
-        #     HashTag("#test"),
-        #     sep="\n\n",
-        # )
-    else:
-        await message.answer("За выбранный период нет данных")
+    await output_text(total, message)
 
 
 @router.message(F.text == 'За день')
 async def get_statistics_day(message: Message, session: AsyncSession):
     total = await orm_get_statistics_day(session)
-    print('ЭТО РЕАКЦИИ ЗА ДЕНЬ')
-    if total:
-        await message.answer(
-            f'1 место по реакциям {total[0][0]}. Число реакции {total[0][1]}\n'
-            f'2 место по реакциям {total[1][0]}. Число реакции {total[1][1]}'
-        )
-    else:
-        await message.answer("За выбранный период нет данных")
+    await output_text(total, message)
 
 
 @router.message(F.text == 'За неделю')
 async def get_statistics_week(message: Message, session: AsyncSession):
     total = await orm_get_statistics_week(session)
     print('ЭТО РЕАКЦИИ ЗА НЕДЕЛЮ')
-    if total:
-        await message.answer(
-            f'1 место по реакциям {total[0][0]}. Число реакции {total[0][1]}\n'
-            f'2 место по реакциям {total[1][0]}. Число реакции {total[1][1]}',
-            parse_mode=ParseMode.HTML
-        )
-    else:
-        await message.answer("За выбранный период нет данных")
+    await output_text(total, message)
 
 
 @router.message(StateFilter(None), F.text == 'Выбрать период')
@@ -131,16 +106,12 @@ async def get_statistics_add_start(message: Message, state: FSMContext):
 async def get_statistics_add_end(message: Message,
                                  state: FSMContext,
                                  ):
-    # r = re.search(r'\b\d{4}-\d{2}-\d{2}\b', message.text)
-    # if not r:
-    #     await message.answer(
-    #         "Введён неверный формат даты, введите еще раз"
-    #     )
-    #     return
     if not await check_date(message):
         return
     await state.update_data(start_period=message.text)
-    await message.answer("Введи дату окончания(включительно) в формате год-месяц-день (например 2024-03-26)")
+    await message.answer(
+        "Введи дату окончания(включительно) в формате год-месяц-день (например 2024-03-26)"
+    )
     await state.set_state(AddDate.end_period)
 
 
@@ -154,12 +125,7 @@ async def finish(message: Message,
                  state: FSMContext,
                  session: AsyncSession
                  ):
-    r = re.search(r'\b\d{4}-\d{2}-\d{2}\b', message.text)
-    # if not r:
-    #     await message.answer(
-    #         "Введён неверный формат даты, введите еще раз"
-    #     )
-    #     return
+
     if not await check_date(message):
         return
     await state.update_data(end_period=message.text)
@@ -170,14 +136,7 @@ async def finish(message: Message,
                                             user_data.get('start_period'),
                                             user_data.get('end_period'))
     print('ЭТО РЕАКЦИИ ЗА ВЫБРАННЫЙ ПЕРИОД')
-    if total:
-        await message.answer(
-            f'1 место по реакциям {total[0][0]}. Число реакции {total[0][1]}\n'
-            f'2 место по реакциям {total[1][0]}. Число реакции {total[1][1]}',
-            parse_mode=ParseMode.HTML
-        )
-    else:
-        await message.answer("За выбранный период нет данных")
+    await output_text(total, message)
 
     await state.clear()
 
