@@ -43,6 +43,31 @@ async def truncate_last_name(first_name: str,
         return f'{first_name} {last_name}'
 
 
+async def text_message_sheduler(array: List) -> str:
+    if array:
+        ind = 1
+        msg = '⭐️ Друзья, хочу поблагодарить самых активных и полезных участников нашего сообщества на этой неделе:\n'
+        max_user = 10
+        if len(array) > max_user:
+            array = array[:max_user]
+        for id_user, name, surname, count_reactions in array:
+            if ind == 1:
+                link = f'🥇 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                msg += f'{link} - {count_reactions}\n'
+            elif ind == 2:
+                link = f'🥈 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                msg += f'{link} - {count_reactions}\n'
+            elif ind == 3:
+                link = f'🥉 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                msg += f'{link} - {count_reactions}\n'
+            else:
+                link = f' {ind}.  <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                msg += f'{link} - {count_reactions}\n'
+            ind += 1
+        return msg
+    return "За выбранный период нет данных"
+
+
 async def output_text(array: List, message: Message):
     if array:
         ind = 1

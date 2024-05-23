@@ -1,5 +1,6 @@
 from aiogram import Router
 from aiogram import Bot
+from aiogram.enums import ParseMode
 
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
@@ -12,7 +13,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import ChatMessages, Reactions
-from orm_query import orm_add_message, orm_create_or_update_reactions
+from handlers import text_message_sheduler
+from orm_query import orm_add_message, orm_create_or_update_reactions, orm_get_statistics_week
 
 group_router = Router()
 
@@ -32,4 +34,5 @@ async def message_reaction_handler(message_reaction: MessageReactionUpdated,
     await orm_create_or_update_reactions(session,
                                          message_reaction,
                                          message_id=message_reaction.message_id)
+
 
