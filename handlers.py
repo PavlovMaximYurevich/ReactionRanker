@@ -11,10 +11,12 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from keyboards import ADMIN_KEYBOARD
+
 from orm_query import (orm_get_all_statistics,
                        orm_get_statistics_day,
                        orm_get_statistics_week,
                        orm_get_statistics_custom)
+from orm_top_messages import orm_all_get_top_messages
 
 router = Router()
 
@@ -107,7 +109,15 @@ async def start_cmd(message: Message):
     )
 
 
-@router.message(F.text == 'Статистика за всё время')
+# @router.message(F.text =='Статистика по сообщениям за всё время')
+# async def message_statistics(message: Message):
+#     await message.answer(
+#         text="Выбери",
+#         reply_markup=MESSAGES_KB,
+#     )
+
+
+@router.message(F.text == 'Статистика по реакциям за всё время')
 async def get_all_statistics(message: Message, session: AsyncSession):
     total = await orm_get_all_statistics(session)
     # print(total)
@@ -178,3 +188,13 @@ async def finish(message: Message,
 @router.message(AddDate.end_period)
 async def check_finish(message: Message, state: FSMContext):
     await message.answer("Вы ввели не допустимые данные")
+
+
+# @router.message(F.text == "Статистика по сообщениям за всё время")
+# async def get_all_top_messages(message: Message, session: AsyncSession):
+#     total = await orm_all_get_top_messages(session)
+#     print(total)
+#     print('ЭТО ВСЕ СООБЩЕНИЯ')
+#     # await output_text(total, message)
+#     # print(total[0][0])
+#     await bot.send_message(chat_id='-1002084425436', text='Тест', reply_to_message_id=total[0][0])

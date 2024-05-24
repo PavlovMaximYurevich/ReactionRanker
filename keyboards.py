@@ -9,20 +9,7 @@ def get_keyboard(
         request_location: int = None,
         sizes: tuple[int] = (2,),
 ):
-    '''
-    Parameters request_contact and request_location must be as indexes of btns args for buttons you need.
-    Example:
-    get_keyboard(
-            "Меню",
-            "О магазине",
-            "Варианты оплаты",
-            "Варианты доставки",
-            "Отправить номер телефона"
-            placeholder="Что вас интересует?",
-            request_contact=4,
-            sizes=(2, 2, 1)
-        )
-    '''
+
     keyboard = ReplyKeyboardBuilder()
 
     for index, text in enumerate(btns, start=0):
@@ -41,10 +28,17 @@ def get_keyboard(
 
 
 ADMIN_KEYBOARD = get_keyboard(
-    "Статистика за всё время",
+    "Статистика по реакциям за всё время",
     "За день",
     "За неделю",
     "Выбрать период",
+    "Статистика по сообщениям за всё время",
     placeholder="Выберите действие",
     sizes=(2,),
 )
+
+# MESSAGES_KB = get_keyboard(
+#     "Статистика по сообщениям",
+#     placeholder="Выберите действие",
+#     sizes=(2,),
+# )

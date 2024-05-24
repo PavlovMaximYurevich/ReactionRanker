@@ -3,14 +3,16 @@ import logging
 import os
 
 import aioschedule
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode
+from aiogram.types import Message
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from dotenv import find_dotenv, load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from orm_query import orm_get_statistics_week
+from orm_top_messages import orm_all_get_top_messages
 
 load_dotenv(find_dotenv())
 
@@ -26,6 +28,23 @@ dispatcher.include_router(router)
 dispatcher.include_router(group_router)
 
 
+@dispatcher.message(F.text == "Статистика по сообщениям за всё время")
+async def get_all_top_messages(message: Message, session: AsyncSession):
+    total = await orm_all_get_top_messages(session)
+    print(total)
+    print('ЭТО ВСЕ СООБЩЕНИЯ')
+    # await output_text(total, message)
+    # print(total[0][0])
+    # await message.answer(text='Это сообщение набрало максимальное количество реакции',
+    #                      reply_to_message_id=total[0][0])
+    await bot.send_message(
+        # chat_id='-4190301675',
+        chat_id='-1002084425436',
+        text='Это сообщение набрало максимальное количество реакции',
+        reply_to_message_id=total[0][0]
+    )
+
+
 async def message_sheduler():
     async with AsyncSession(engine) as session:
         total = await orm_get_statistics_week(session)
@@ -36,7 +55,8 @@ async def message_sheduler():
 
 
 async def scheduler():
-    aioschedule.every(10).seconds.do(message_sheduler)
+    # aioschedule.every(10).seconds.do(message_sheduler)
+    aioschedule.every().sunday.at("18:00").do(message_sheduler)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)

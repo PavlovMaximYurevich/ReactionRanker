@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import ChatMessages, Reactions
 from handlers import text_message_sheduler
-from orm_query import orm_add_message, orm_create_or_update_reactions, orm_get_statistics_week
+from orm_query import orm_add_message, orm_create_or_update_reactions
 
 group_router = Router()
 

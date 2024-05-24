@@ -2,7 +2,6 @@ from datetime import timedelta, date
 
 from aiogram.types import Message, MessageReactionUpdated
 from sqlalchemy import update, select, func, Date, desc
-from sqlalchemy.sql.expression import cast, cte
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import ChatMessages, Reactions
