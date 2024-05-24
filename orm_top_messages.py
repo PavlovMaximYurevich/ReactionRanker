@@ -16,7 +16,7 @@ async def orm_all_get_top_messages(session: AsyncSession):
         ChatMessages.id_username,
         ChatMessages.name,
         ChatMessages.last_name,
-        func.sum(Reactions.count_reactions).label("count")
+        func.max(Reactions.count_reactions).label("count")
     ).join(
         Reactions,
         ChatMessages.id_message == Reactions.id_message
