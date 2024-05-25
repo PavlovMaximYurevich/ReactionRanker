@@ -47,11 +47,61 @@ async def orm_get_messages_day(session: AsyncSession):
     ).where(
         func.date(ChatMessages.created_date) == date.today()
     ).group_by(
-        ChatMessages.username, ChatMessages.last_name
+        ChatMessages.id_message
     ).order_by(desc('count'))
 
     res = await session.execute(queryset)
 
     # print('RES_ALL', res.all())
-    return res.all()
+    return res.first()
 
+
+async def orm_get_messages_week(session: AsyncSession):
+    """Статистика сообщений по неделям."""
+
+    queryset = select(
+        ChatMessages.id_message,
+        ChatMessages.content_type,
+        ChatMessages.id_username,
+        ChatMessages.name,
+        ChatMessages.last_name,
+        func.max(Reactions.count_reactions).label("count")
+    ).join(
+        Reactions,
+        ChatMessages.id_message == Reactions.id_message
+    ).where(
+        func.date(ChatMessages.created_date) >= date.today() - timedelta(days=6)
+    ).group_by(
+        ChatMessages.id_message
+    ).order_by(desc('count'))
+
+    res = await session.execute(queryset)
+
+    # print('RES_ALL', res.all())
+    return res.first()
+
+
+async def orm_get_messages_custom(session: AsyncSession,
+                                  start_period: Date,
+                                  end_period: Date):
+    """Статистика по сообщениям по выбранному периоду."""
+
+    queryset = select(
+        ChatMessages.id_message,
+        ChatMessages.content_type,
+        ChatMessages.id_username,
+        ChatMessages.name,
+        ChatMessages.last_name,
+        func.max(Reactions.count_reactions).label("count")
+    ).join(
+        Reactions, ChatMessages.id_message == Reactions.id_message
+    ).where(
+        func.date(ChatMessages.created_date).between(start_period, end_period)
+    ).group_by(
+        ChatMessages.id_message
+    ).order_by(desc('count'))
+
+    res = await session.execute(queryset)
+
+    # print('RES_ALL', res.all())
+    return res.first()

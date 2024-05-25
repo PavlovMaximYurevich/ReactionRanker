@@ -129,7 +129,7 @@ async def get_statistics_week(message: Message, session: AsyncSession):
     await output_text(total, message)
 
 
-@router.message(StateFilter(None), F.text == 'Выбрать период')
+@router.message(StateFilter(None), F.text == 'Выбери период по реакциям')
 async def get_statistics_add_start(message: Message, state: FSMContext):
     await message.answer(
         "Введи дату начала в формате год-месяц-день (например 2024-03-26)",
