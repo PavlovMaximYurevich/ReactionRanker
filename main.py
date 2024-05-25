@@ -40,13 +40,14 @@ async def get_all_top_messages(message: Message, session: AsyncSession):
     await bot.forward_message(
         # chat_id='-4190301675',
         # chat_id='1127674418',
-        chat_id='1127674418',  # куда пересылается
-        # from_chat_id='-1002084425436',
-        from_chat_id='-4190301675',  # откуда пересылается
+        chat_id=message.from_user.id, # куда пересылается
+        from_chat_id='-1002084425436',
+        # from_chat_id='-4190301675',  # откуда пересылается
         # text='Это сообщение набрало максимальное количество реакции',
         # reply_to_message_id=total[0][0]
         message_id=total[0][0]
     )
+    # await bot.send_message(message.from_user.id, text=f'{total}', reply_to_message_id=total[0][0])
 
 
 async def message_sheduler():
