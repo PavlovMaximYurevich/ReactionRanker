@@ -1,18 +1,15 @@
 import asyncio
 import logging
 import os
-
 import aioschedule
-from aiogram import Bot, Dispatcher, F
+
+from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
-from aiogram.types import Message
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from dotenv import find_dotenv, load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from orm_query import orm_get_statistics_week
-from orm_top_messages import orm_all_get_top_messages
 
 load_dotenv(find_dotenv())
 
@@ -20,11 +17,14 @@ from database.engine import create_db, session_maker, engine
 from handlers import router, text_message_sheduler
 from middlewares import DatabaseSession
 from user_group import group_router
+from top_messages_handlers import top_msg
+
 
 bot = Bot(token=os.getenv('TOKEN'))
 dispatcher = Dispatcher()
 
 dispatcher.include_router(router)
+dispatcher.include_router(top_msg)
 dispatcher.include_router(group_router)
 
 

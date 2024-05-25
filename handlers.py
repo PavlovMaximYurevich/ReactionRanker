@@ -1,7 +1,7 @@
 import re
 from typing import List
 
-from aiogram import Router, F, Bot
+from aiogram import Router, F
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, StateFilter
 
@@ -16,7 +16,6 @@ from orm_query import (orm_get_all_statistics,
                        orm_get_statistics_day,
                        orm_get_statistics_week,
                        orm_get_statistics_custom)
-from orm_top_messages import orm_all_get_top_messages
 
 router = Router()
 
@@ -109,14 +108,6 @@ async def start_cmd(message: Message):
     )
 
 
-# @router.message(F.text =='Статистика по сообщениям за всё время')
-# async def message_statistics(message: Message):
-#     await message.answer(
-#         text="Выбери",
-#         reply_markup=MESSAGES_KB,
-#     )
-
-
 @router.message(F.text == 'Статистика по реакциям за всё время')
 async def get_all_statistics(message: Message, session: AsyncSession):
     total = await orm_get_all_statistics(session)
@@ -189,24 +180,3 @@ async def finish(message: Message,
 async def check_finish(message: Message, state: FSMContext):
     await message.answer("Вы ввели не допустимые данные")
 
-
-@router.message(F.text == "Статистика по сообщениям за всё время")
-async def get_all_top_messages(message: Message, session: AsyncSession, bot: Bot):
-    total = await orm_all_get_top_messages(session)
-    print(total)
-    print('ЭТО ВСЕ СООБЩЕНИЯ')
-    # await output_text(total, message)
-    # print(total[0][0])
-    # await message.answer(text='Это сообщение набрало максимальное количество реакции',
-    #                      reply_to_message_id=total[0][0])
-    await message.answer('Это самое залайканное сообщение')
-    await bot.forward_message(
-        # chat_id='-4190301675',
-        # chat_id='1127674418',
-        chat_id=message.from_user.id, # куда пересылается
-        from_chat_id='-1002084425436',
-        # from_chat_id='-4190301675',  # откуда пересылается
-        # text='Это сообщение набрало максимальное количество реакции',
-        # reply_to_message_id=total[0][0]
-        message_id=total[0][0]
-    )
