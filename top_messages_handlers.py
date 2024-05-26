@@ -106,13 +106,13 @@ async def finish_msg(message: Message,
         return
     await state.update_data(end_period=message.text)
     user_data = await state.get_data()
-    print('USER_DATA', user_data)
+    # print('USER_DATA', user_data)
 
     total = await orm_get_messages_custom(session,
                                           user_data.get('start_period'),
                                           user_data.get('end_period'))
-    print('TOTAL', total)
-    print('ЭТО СООБЩЕНИЯ ЗА ВЫБРАННЫЙ ПЕРИОД')
+    # print('TOTAL', total)
+    # print('ЭТО СООБЩЕНИЯ ЗА ВЫБРАННЫЙ ПЕРИОД')
     await output_text_message(total, message, bot)
 
     await state.clear()
