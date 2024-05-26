@@ -33,7 +33,7 @@ async def output_text_message(array: List, message: Message, bot: Bot):
             # chat_id='-4190301675',
             # chat_id='1127674418',
             chat_id=message.from_user.id,  # куда пересылается
-            from_chat_id='-1002084425436',
+            from_chat_id='-1001512201546',
             # from_chat_id='-4190301675',  # откуда пересылается
             # text='Это сообщение набрало максимальное количество реакции',
             # reply_to_message_id=total[0][0]

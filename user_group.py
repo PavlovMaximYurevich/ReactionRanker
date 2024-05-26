@@ -40,8 +40,9 @@ async def get_admins(message: Message, bot: Bot):
 @group_router.message()
 async def message_handler(message: Message, session: AsyncSession):
     # Получить chat_id
-    print(message)
-    await orm_add_message(session, message)
+    # print(message)
+    if message.chat.id == '-1001512201546':
+        await orm_add_message(session, message)
     # print(message)
 
 
@@ -49,8 +50,9 @@ async def message_handler(message: Message, session: AsyncSession):
 async def message_reaction_handler(message_reaction: MessageReactionUpdated,
                                    session: AsyncSession,
                                    ):
-    await orm_create_or_update_reactions(session,
-                                         message_reaction,
-                                         message_id=message_reaction.message_id)
+    if message_reaction.chat.id == '-1001512201546':
+        await orm_create_or_update_reactions(session,
+                                             message_reaction,
+                                             message_id=message_reaction.message_id)
 
 
