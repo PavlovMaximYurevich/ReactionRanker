@@ -3,13 +3,14 @@ from typing import List
 
 from aiogram import Router, F
 from aiogram.enums import ParseMode
-from aiogram.filters import CommandStart, StateFilter
+from aiogram.filters import CommandStart, StateFilter, Command
 
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from filters import ChatTypeFilter, IsAdmin
 from keyboards import ADMIN_KEYBOARD
 
 from orm_query import (orm_get_all_statistics,
@@ -18,6 +19,7 @@ from orm_query import (orm_get_all_statistics,
                        orm_get_statistics_custom)
 
 router = Router()
+router.message.filter(ChatTypeFilter(["private"]), IsAdmin())
 
 
 class AddDate(StatesGroup):
@@ -104,11 +106,16 @@ async def output_text(array: List, message: Message):
 async def start_cmd(message: Message):
     await message.answer(
         "Привет, я могу показать статистику\nНажми кнопку ниже",
-        reply_markup=ADMIN_KEYBOARD,
+        # reply_markup=ADMIN_KEYBOARD,
     )
 
 
-@router.message(F.text == 'Статистика по реакциям за всё время')
+@router.message(Command("admin"))
+async def admin_features(message: Message):
+    await message.answer("Что хотите сделать?", reply_markup=ADMIN_KEYBOARD)
+
+
+@router.message(F.text == 'Реакции за всё время')
 async def get_all_statistics(message: Message, session: AsyncSession):
     total = await orm_get_all_statistics(session)
     # print(total)
@@ -116,13 +123,13 @@ async def get_all_statistics(message: Message, session: AsyncSession):
     await output_text(total, message)
 
 
-@router.message(F.text == 'За день')
+@router.message(F.text == 'Реакции за день')
 async def get_statistics_day(message: Message, session: AsyncSession):
     total = await orm_get_statistics_day(session)
     await output_text(total, message)
 
 
-@router.message(F.text == 'За неделю')
+@router.message(F.text == 'Реакции за неделю')
 async def get_statistics_week(message: Message, session: AsyncSession):
     total = await orm_get_statistics_week(session)
     print('ЭТО РЕАКЦИИ ЗА НЕДЕЛЮ')

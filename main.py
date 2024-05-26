@@ -21,6 +21,8 @@ from top_messages_handlers import top_msg
 
 
 bot = Bot(token=os.getenv('TOKEN'))
+bot.my_admins_list = []
+
 dispatcher = Dispatcher()
 
 dispatcher.include_router(router)

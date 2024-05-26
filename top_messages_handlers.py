@@ -8,12 +8,14 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from filters import ChatTypeFilter, IsAdmin
 from handlers import check_date
 from orm_top_messages import (orm_all_get_top_messages,
                               orm_get_messages_day, orm_get_messages_week,
                               orm_get_messages_custom)
 
 top_msg = Router()
+top_msg.message.filter(ChatTypeFilter(["private"]), IsAdmin())
 
 
 class AddDateMsg(StatesGroup):
@@ -41,7 +43,7 @@ async def output_text_message(array: List, message: Message, bot: Bot):
         await message.answer("За выбранный период нет данных")
 
 
-@top_msg.message(F.text == "Статистика по сообщениям за всё время")
+@top_msg.message(F.text == "Топ сообщение за всё время")
 async def get_all_top_messages(message: Message,
                                session: AsyncSession,
                                bot: Bot):
@@ -50,7 +52,7 @@ async def get_all_top_messages(message: Message,
     await output_text_message(total, message, bot)
 
 
-@top_msg.message(F.text == "Статистика по сообщениям за день")
+@top_msg.message(F.text == "Топ сообщение за день")
 async def get_top_messages_day(message: Message,
                                session: AsyncSession,
                                bot: Bot):
@@ -59,7 +61,7 @@ async def get_top_messages_day(message: Message,
     await output_text_message(total, message, bot)
 
 
-@top_msg.message(F.text == "Статистика сообщений по неделям")
+@top_msg.message(F.text == "Топ сообщение за неделю")
 async def get_top_messages_week(message: Message,
                                 session: AsyncSession,
                                 bot: Bot):

@@ -2,7 +2,7 @@ from aiogram import Router
 from aiogram import Bot
 from aiogram.enums import ParseMode
 
-from aiogram.filters import CommandStart, StateFilter
+from aiogram.filters import CommandStart, StateFilter, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, MessageReactionCountUpdated, MessageReactionUpdated
@@ -17,6 +17,24 @@ from handlers import text_message_sheduler
 from orm_query import orm_add_message, orm_create_or_update_reactions
 
 group_router = Router()
+
+
+@group_router.message(Command("admin"))
+async def get_admins(message: Message, bot: Bot):
+    chat_id = message.chat.id
+    admins_list = await bot.get_chat_administrators(chat_id)
+    #просмотреть все данные и свойства полученных объектов
+    #print(admins_list)
+    # Код ниже это генератор списка, как и этот x = [i for i in range(10)]
+    admins_list = [
+        member.user.id
+        for member in admins_list
+        if member.status == "creator" or member.status == "administrator"
+    ]
+    bot.my_admins_list = admins_list
+    if message.from_user.id in admins_list:
+        await message.delete()
+    #print(admins_list)
 
 
 @group_router.message()
