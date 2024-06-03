@@ -36,12 +36,12 @@ async def message_sheduler():
         # print('ЭТО РЕАКЦИИ ЗА НЕДЕЛЮ', total)
         text = await text_message_sheduler(total)
         # await bot.send_message(chat_id='-1002084425436', text="Это сообщение будет генерироваться каждые 5 секунд")
-        await bot.send_message(chat_id='-1002084425436', text=text, parse_mode=ParseMode.HTML)
+        await bot.send_message(chat_id='-1001512201546', text=text, parse_mode=ParseMode.HTML)
 
 
 async def scheduler():
     # aioschedule.every(10).seconds.do(message_sheduler)
-    aioschedule.every().sunday.at("18:00").do(message_sheduler)
+    aioschedule.every().sunday.at("18:15").do(message_sheduler)
     while True:
         await aioschedule.run_pending()
         await asyncio.sleep(1)

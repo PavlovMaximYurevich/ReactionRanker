@@ -73,12 +73,13 @@ async def orm_get_all_statistics(session: AsyncSession):
         ChatMessages.id_username,
         ChatMessages.name,
         ChatMessages.last_name,
+        ChatMessages.username,
         func.sum(Reactions.count_reactions).label("count")
     ).join(
         Reactions,
         ChatMessages.id_message == Reactions.id_message
     ).group_by(
-        ChatMessages.username, ChatMessages.last_name
+        ChatMessages.id_username
     ).order_by(desc('count'))
 
     res = await session.execute(queryset)
@@ -94,6 +95,7 @@ async def orm_get_statistics_day(session: AsyncSession):
         ChatMessages.id_username,
         ChatMessages.name,
         ChatMessages.last_name,
+        ChatMessages.username,
         func.sum(Reactions.count_reactions).label("count")
     ).join(
         Reactions,
@@ -101,7 +103,7 @@ async def orm_get_statistics_day(session: AsyncSession):
     ).where(
         func.date(ChatMessages.created_date) == date.today()
     ).group_by(
-        ChatMessages.username, ChatMessages.last_name
+        ChatMessages.id_username
     ).order_by(desc('count'))
 
     res = await session.execute(queryset)
@@ -117,6 +119,7 @@ async def orm_get_statistics_week(session: AsyncSession):
         ChatMessages.id_username,
         ChatMessages.name,
         ChatMessages.last_name,
+        ChatMessages.username,
         func.sum(Reactions.count_reactions).label("count")
     ).join(
         Reactions,
@@ -124,7 +127,7 @@ async def orm_get_statistics_week(session: AsyncSession):
     ).where(
         func.date(ChatMessages.created_date) >= date.today() - timedelta(days=6)
     ).group_by(
-        ChatMessages.username, ChatMessages.last_name
+        ChatMessages.id_username
     ).order_by(desc('count'))
 
     res = await session.execute(queryset)
@@ -142,13 +145,14 @@ async def orm_get_statistics_custom(session: AsyncSession,
         ChatMessages.id_username,
         ChatMessages.name,
         ChatMessages.last_name,
+        ChatMessages.username,
         func.sum(Reactions.count_reactions).label("count")
     ).join(
         Reactions, ChatMessages.id_message == Reactions.id_message
     ).where(
         func.date(ChatMessages.created_date).between(start_period, end_period)
     ).group_by(
-        ChatMessages.username, ChatMessages.last_name
+        ChatMessages.id_username
     ).order_by(desc('count'))
 
     res = await session.execute(queryset)

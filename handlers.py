@@ -39,8 +39,11 @@ async def check_date(message: Message):
 
 async def truncate_last_name(first_name: str,
                              last_name: str,
+                             username: str,
                              ) -> str:
     if last_name is None:
+        return f'{first_name}'
+    elif username is None:
         return f'{first_name}'
     else:
         return f'{first_name} {last_name}'
@@ -53,18 +56,18 @@ async def text_message_sheduler(array: List) -> str:
         max_user = 10
         if len(array) > max_user:
             array = array[:max_user]
-        for id_user, name, surname, count_reactions in array:
+        for id_user, name, surname, username, count_reactions in array:
             if ind == 1:
-                link = f'🥇 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                link = f'🥇 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname, username)}</a>'
                 msg += f'{link} - {count_reactions}\n'
             elif ind == 2:
-                link = f'🥈 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                link = f'🥈 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname, username)}</a>'
                 msg += f'{link} - {count_reactions}\n'
             elif ind == 3:
-                link = f'🥉 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                link = f'🥉 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname, username)}</a>'
                 msg += f'{link} - {count_reactions}\n'
             else:
-                link = f' {ind}.  <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                link = f' {ind}.  <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname, username)}</a>'
                 msg += f'{link} - {count_reactions}\n'
             ind += 1
         return msg
@@ -78,21 +81,20 @@ async def output_text(array: List, message: Message):
         max_user = 10
         if len(array) > max_user:
             array = array[:max_user]
-        for id_user, name, surname, count_reactions in array:
+        for id_user, name, surname, username, count_reactions in array:
             if ind == 1:
-                link = f'🥇 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                link = f'🥇 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname, username)}</a>'
                 msg += f'{link} - {count_reactions}\n'
             elif ind == 2:
-                link = f'🥈 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                link = f'🥈 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname, username)}</a>'
                 msg += f'{link} - {count_reactions}\n'
             elif ind == 3:
-                link = f'🥉 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                link = f'🥉 <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname, username)}</a>'
                 msg += f'{link} - {count_reactions}\n'
             else:
-                link = f'{ind}.  <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname)}</a>'
+                link = f'{ind}.  <a href="tg://user?id={id_user}">{await truncate_last_name(name, surname, username)}</a>'
                 msg += f'{link} - {count_reactions}\n'
             ind += 1
-
         await message.answer(
             f'Топ юзеров: \n{msg}',
             parse_mode=ParseMode.HTML
