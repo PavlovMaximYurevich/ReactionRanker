@@ -1,10 +1,11 @@
 import asyncio
 import logging
 import os
-import aioschedule
 
+import aioschedule
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from dotenv import find_dotenv, load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,6 +40,11 @@ async def message_sheduler():
         await bot.send_message(chat_id='-1001512201546', text=text, parse_mode=ParseMode.HTML)
 
 
+# sh = AsyncIOScheduler(timezone='Europe/Moscow')
+# sh.add_job(message_sheduler, trigger='crone', kwargs={'bot': bot})
+# sh.modify_job()
+
+
 async def scheduler():
     # aioschedule.every(10).seconds.do(message_sheduler)
     aioschedule.every().sunday.at("18:15").do(message_sheduler)
@@ -53,6 +59,7 @@ async def on_start_up(bot: Bot):
     #     await drop_db()
     asyncio.create_task(scheduler())
     # jobs = [asyncio.create_task(job.run()) for job in self.jobs if job.should_run]
+    # строка 108 init.py
     await create_db()
 
 
